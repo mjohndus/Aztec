@@ -1,0 +1,26 @@
+{
+    "name": "mjohndus/aztec",
+    "type": "library",
+    "license": "Apache-2.0",
+    "description": "PHP library to generate Aztec barcodes",
+    "keywords": ["library", "aztec", "barcode", "2d-barcode"],
+    "homepage": "https://github.com/z38/metzli",
+    "authors": [
+        {
+            "name": "z38",
+            "homepage": "https://github.com/z38",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^7.1||^8"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^7||^9"
+    },
+    "autoload": {
+        "psr-0": {
+            "Aztec": "src/"
+        }
+    }
+}
