@@ -2,6 +2,8 @@
 
 namespace Aztec;
 
+//use Com\Tecnick\Color;
+
 class Renderer
 {
 	private $image;
@@ -16,11 +18,23 @@ class Renderer
 		$this->image = imagecreate($this->size, $this->size);
 
 		// Extract options
-		list($R, $G, $B) = $options['bgColor']->get();
-		$bgColorAlloc = imagecolorallocate($this->image, $R, $G, $B);
+            if ($options['bgColor'] !== null) {
+                $rgbcolor = $options['bgColor']->getNormalizedArray(255);
+                $bgColorAlloc = imagecolorallocate($this->image, $rgbcolor['R'], $rgbcolor['G'], $rgbcolor['B']);
+                //imagecolortransparent($this->image, $bgColorAlloc);
 		imagefill($this->image, 0, 0, $bgColorAlloc);
-		list($R, $G, $B) = $options['color']->get();
-		$colorAlloc = imagecolorallocate($this->image, $R, $G, $B);
+                } else {
+                $bgColorAlloc = imagecolorallocatealpha($this->image, 0, 0, 0, 127);
+                imagefill($this->image, 0, 0, $bgColorAlloc);
+            }
+            if ($options['fsColor'] !== null) {
+                $rgbcolor = $options['fsColor']->getNormalizedArray(255);
+                $fsColorAlloc = imagecolorallocate($this->image, $rgbcolor['R'], $rgbcolor['G'], $rgbcolor['B']);
+                } else {
+                $fsColorAlloc = imagecolorallocatealpha($this->image, 0, 0, 0, 127);
+            }
+                $rgbcolor = $options['Color']->getNormalizedArray(255);
+                $ColorAlloc = imagecolorallocate($this->image, $rgbcolor['R'], $rgbcolor['G'], $rgbcolor['B']);
 
 		// Render the code
 		for ($x = 0; $x < $width; $x++) {
@@ -31,9 +45,18 @@ class Renderer
 						($y * $ratio) + $padding,
 						(($x + 1) * $ratio - 1) + $padding,
 						(($y + 1) * $ratio - 1) + $padding,
-						$colorAlloc
+						$ColorAlloc
 					);
-				}
+				} else {
+//                                if (isset($pixelGrid[$x][$y])){
+                                        imagefilledrectangle(
+                                                $this->image, ($x * $ratio) + $padding,
+                                                ($y * $ratio) + $padding,
+                                                (($x + 1) * $ratio - 1) + $padding,
+                                                (($y + 1) * $ratio - 1) + $padding,
+                                                $fsColorAlloc
+                                        );
+                                }
 			}
 		}
 	}

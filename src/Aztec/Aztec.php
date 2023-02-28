@@ -3,6 +3,7 @@
 namespace Aztec;
 
 use Aztec\Encoder\Encoder;
+use Com\Tecnick\Color;
 
 class Aztec
 {
@@ -11,9 +12,6 @@ class Aztec
 
 	public function __construct(array $opts = [])
 	{
-		$this->setColor('color', 0, $opts);
-		$this->setColor('bgColor', 255, $opts);
-
 		if (!isset($opts['hint'])) {
 			$this->options['hint'] = "dynamic";
 		} else {
@@ -23,23 +21,47 @@ class Aztec
 			$this->options['hint'] = $opts['hint'];
 		}
 
+                if (!isset($opts['Color'])) {
+                        $this->setColor('Color', 'black');
+                    } else {
+                        $this->setColor('Color', $opts['Color']);
+                }
+                if (isset($opts['bgColor'])) {
+                        $this->setColor('bgColor', $opts['bgColor']);
+                }
+                if (isset($opts['fsColor'])) {
+                        $this->setColor('fsColor', $opts['fsColor']);
+                }
+                if (isset($opts['bdColor'])) {
+                        $this->setColor('bdColor', $opts['bdColor']);
+                }
+
 		$this->options['ratio'] = (isset($opts['ratio'])) ? $this->option_in_range($opts['ratio'], 1, 10) : 4;
 		$this->options['padding'] = (isset($opts['padding'])) ? $this->option_in_range($opts['padding'], 0, 50) : 20;
-		$this->options['quality'] = (isset($opts['quality'])) ? $this->option_in_range($opts['quality'], 0, 100) : 90;
+		$this->options['quality'] = (isset($opts['quality'])) ? $this->option_in_range($opts['quality'], 0, 100) : 100;
 		$this->options['eccPercent'] = (isset($opts['eccPercent'])) ? $this->option_in_range($opts['eccPercent'], 1, 200) : 33;
 	}
 
-	private function setColor($value, $default, $opts)
-	{
-		if (!isset($opts[$value])) {
-			$this->options[$value] = new azColor($default);
-		} else {
-			if (!($opts[$value] instanceof azColor)) {
-				throw azException::InvalidInput("Invalid value for \"$value\". Expected an azColor object.");
-			}
-			$this->options[$value] = $opts[$value];
-		}
-	}
+        private function setColor($value, $color)
+        {
+                $this->options[$value] = $this->getRgbColorObject($color);
+                if ($this->options[$value] === null) {
+                    echo 'there is no object';
+//                  throw new BarcodeException('The foreground color cannot be empty or transparent');
+//                  throw azException::InvalidInput("Invalid value for \"$value\". Expected an azColor object.");
+                }
+//              return $this;
+        }
+
+        protected function getRgbColorObject($color)
+        {
+            $conv = new \Com\Tecnick\Color\Pdf();
+            $cobj = $conv->getColorObject($color);
+            if ($cobj !== null) {
+                return new \Com\Tecnick\Color\Model\Rgb($cobj->toRgbArray());
+            }
+            return null;
+        }
 
 	public function config(array $opts)
 	{
